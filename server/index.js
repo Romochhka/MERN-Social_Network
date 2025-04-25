@@ -22,11 +22,12 @@ app.use(express.json());
 // Routes
 // http://localhost:5000/
 app.use('/api/auth', authRoute );
+app.use('/api/post', postRoute );
 
 async function start() {
 	try {
 
-			await mongoose.connect(`mongodb+srv://${DB_USER}:${DB_PASSWORD}@cluster0.kftkbjj.mongodb.net/${DB_NAME}?retryWrites=true&w=majority&appName=Cluster0`,
+				await mongoose.connect(`mongodb+srv://${DB_USER}:${DB_PASSWORD}@cluster0.kftkbjj.mongodb.net/${DB_NAME}?retryWrites=true&w=majority&appName=Cluster0`,
 	)
 		app.listen(PORT, () => console.log(`Server started on port:${5000}`))
 	} catch (error) {
