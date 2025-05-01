@@ -1,16 +1,13 @@
 import { Router } from "express";
-import { register, login, getMe } from '../controllers/auth.js'
-import {checkAuth} from "../utils/checkAuth.js";
+import fileUpload from "express-fileupload";
+import { checkAuth } from "../utils/checkAuth.js";
+import { createPost,getAll } from "../controllers/posts.js";
 
 const router = new Router();
+// Create Post
+router.post('/', checkAuth, fileUpload(), createPost);
 
-// Register
-router.post('/register', register);
-
-// Login
-router.post('/login', login);
-
-// Get Me
-router.get('/me', checkAuth, getMe)
+// Get All Posts
+router.get('/', getAll);
 
 export default router;

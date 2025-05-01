@@ -1,22 +1,21 @@
 import jwt from 'jsonwebtoken';
 
 export const checkAuth = (req, res, next) => {
-	const token = req.headers.authorization || ''.replace(/Bearer\s?/,'')
+	const token = (req.headers.authorization || '').replace(/Bearer\s?/, '');
 
-	if (token){
+	if (token) {
 		try {
-			const decoded = jwt.verify(token, process.env.SWT_SECRET)
-
-			req.userId = decoded.id
-
+			const decoded = jwt.verify(token, process.env.JWT_SECRET);
+			req.userId = decoded.id;
+			next();
 		} catch (error) {
-			return res.json({
+			return res.status(403).json({
 				message: 'Нет доступа.',
-			})
+			});
 		}
 	} else {
-		return res.json({
+		return res.status(403).json({
 			message: 'Нет доступа.',
-		})
+		});
 	}
-}
+};
