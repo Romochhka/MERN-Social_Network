@@ -42,6 +42,18 @@ export const postSlice = createSlice({
 			.addCase(createPost.rejected, (state) => {
 				state.loading = false
 		})
+	builder
+			.addCase(getAllPosts.pending, (state) => {
+				state.loading = true
+		})
+			.addCase(getAllPosts.fulfilled, (state,action) => {
+				state.loading = false
+				state.posts = action.payload.posts
+				state.popularPosts = action.payload.popularPosts
+		})
+			.addCase(getAllPosts.rejected, (state) => {
+				state.loading = false
+		})
 	},
 })
 
