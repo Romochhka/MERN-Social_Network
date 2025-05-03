@@ -1,4 +1,4 @@
-import {react, useEffect} from 'react';
+import { useEffect } from 'react';
 import PostItem from "../components/PostItem.jsx";
 import PopularPosts from "../components/PopularPosts.jsx";
 import {useDispatch, useSelector} from "react-redux";

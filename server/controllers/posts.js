@@ -50,3 +50,21 @@ export const getAll = async (req, res) => {
 		res.json({ message: 'Что-то пошло не так.'})
 	}
 }
+
+//get by Id
+export const getById = async (req, res) => {
+	try {
+		const post = await Post.findOneAndUpdate(
+			{ _id: req.params.id },
+			{ $inc: { views: 1 } },
+			{ new: true }
+		)
+
+		if (!post) return res.status(404).json({ message: 'Пост не найден' })
+
+		res.json(post)
+	} catch (error) {
+		console.error(error)
+		res.status(500).json({ message: 'Что-то пошло не так.' })
+	}
+}
