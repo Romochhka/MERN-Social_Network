@@ -6,14 +6,14 @@ import { fileURLToPath } from 'url'
 // Create Post
 export const createPost = async (req, res) => {
 	try {
-		const { title, text } = req.body;
-		const user = await User.findById(req.userId);
+		const { title, text } = req.body
+		const user = await User.findById(req.userId)
 
-		let fileName = '';
+		let fileName = ''
 		if (req.files && req.files.image) {
-			fileName = Date.now().toString() + req.files.image.name;
-			const __dirname = dirname(fileURLToPath(import.meta.url));
-			await req.files.image.mv(path.join(__dirname, '..', 'uploads', fileName));
+			fileName = Date.now().toString() + req.files.image.name
+			const __dirname = dirname(fileURLToPath(import.meta.url))
+			await req.files.image.mv(path.join(__dirname, '..', 'uploads', fileName))
 		}
 
 		const newPost = new Post({
@@ -22,36 +22,38 @@ export const createPost = async (req, res) => {
 			text,
 			imgUrl: fileName,
 			author: req.userId,
-		});
+		})
 
-		await newPost.save();
+		await newPost.save()
 
 		await User.findByIdAndUpdate(req.userId, {
 			$push: { posts: newPost._id },
-		});
+		})
 
-		return res.status(201).json(newPost);
+		return res.status(201).json(newPost)
 	} catch (error) {
-		console.error(error);
-		res.status(500).json({ message: 'что-то пошло не так' });
+		console.error(error)
+		res.status(500).json({ message: 'Что-то пошло не так' })
 	}
-};
+}
 
-//get All Posts
+// Get All Posts
 export const getAll = async (req, res) => {
 	try {
 		const posts = await Post.find().sort('-createdAt')
 		const popularPosts = await Post.find().limit(5).sort('-views')
+
 		if (!posts) {
-			return res.json({ message: 'Постов нет'})
+			return res.json({ message: 'Постов нет' })
 		}
-		res.json({posts, popularPosts});
+
+		res.json({ posts, popularPosts })
 	} catch (error) {
-		res.json({ message: 'Что-то пошло не так.'})
+		res.status(500).json({ message: 'Что-то пошло не так.' })
 	}
 }
 
-//get by Id
+// Get By Id
 export const getById = async (req, res) => {
 	try {
 		const post = await Post.findOneAndUpdate(
@@ -60,9 +62,28 @@ export const getById = async (req, res) => {
 			{ new: true }
 		)
 
-		if (!post) return res.status(404).json({ message: 'Пост не найден' })
+		if (!post) {
+			return res.status(404).json({ message: 'Пост не найден' })
+		}
 
 		res.json(post)
+	} catch (error) {
+		console.error(error)
+		res.status(500).json({ message: 'Что-то пошло не так.' })
+	}
+}
+
+// Get My Posts
+export const getMyPosts = async (req, res) => {
+	try {
+		const user = await User.findById(req.userId)
+		const list = await Promise.all(
+			user.posts.map((post) => {
+				return Post.findById(post._id)
+			})
+		)
+
+		res.json(list)
 	} catch (error) {
 		console.error(error)
 		res.status(500).json({ message: 'Что-то пошло не так.' })
