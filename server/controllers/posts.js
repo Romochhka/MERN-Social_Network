@@ -89,3 +89,20 @@ export const getMyPosts = async (req, res) => {
 		res.status(500).json({ message: 'Что-то пошло не так.' })
 	}
 }
+
+// Remove post
+export const removePost = async (req, res) => {
+	try {
+		const post = await Post.findByIdAndDelete(req.params.id)
+		if(!post) return res.json({message: 'Такого поста не существует'})
+
+		await User.findByIdAndUpdate(req.userId, {
+			$pull: { posts: req.params.id },
+		})
+
+		res.json({ id: req.params.id })
+	} catch (error) {
+		console.error(error)
+		res.status(500).json({ message: 'Что-то пошло не так.' })
+	}
+}

@@ -3,7 +3,7 @@ import axios from '../../../utils/axios.js'
 
 const initialState = {
 	user: null,
-	token: null,
+	token: window.localStorage.getItem('token'),
 	isLoading: false,
 	status: null,
 }
@@ -41,15 +41,14 @@ export const loginUser = createAsyncThunk(
 )
 
 // get me
-export const getMe = createAsyncThunk('auth/getMe', async () => {
-		try {
-			const { data } = await axios.post('/auth/me')
-			return data
-		} catch (error) {
-			console.log(error)
-		}
+export const getMe = createAsyncThunk('auth/getMe', async (_, { rejectWithValue }) => {
+	try {
+		const { data } = await axios.post('/auth/me')
+		return data
+	} catch (error) {
+		return rejectWithValue(error.response.data)
 	}
-)
+})
 
 export const authSlice = createSlice({
 	name: 'auth',
