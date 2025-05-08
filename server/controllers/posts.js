@@ -2,6 +2,7 @@ import Post from '../models/Post.js'
 import User from '../models/User.js'
 import path, { dirname } from 'path'
 import { fileURLToPath } from 'url'
+import {text} from "express";
 
 // Create Post
 export const createPost = async (req, res) => {
@@ -101,6 +102,30 @@ export const removePost = async (req, res) => {
 		})
 
 		res.json({ id: req.params.id })
+	} catch (error) {
+		console.error(error)
+		res.status(500).json({ message: 'Что-то пошло не так.' })
+	}
+}
+
+export const updatePost = async (req, res) => {
+	try {
+		const { title, text, id } = req.body
+		const post = await Post.findById(req.params.id)
+
+		if (req.files && req.files.image) {
+			let fileName = Date.now().toString() + req.files.image.name
+			const __dirname = dirname(fileURLToPath(import.meta.url))
+			await req.files.image.mv(path.join(__dirname, '..', 'uploads', fileName))
+			post.imgUrl = fileName || ''
+		}
+
+		post.title = title
+		post.text = text
+
+		await post.save()
+
+		res.json(post )
 	} catch (error) {
 		console.error(error)
 		res.status(500).json({ message: 'Что-то пошло не так.' })
