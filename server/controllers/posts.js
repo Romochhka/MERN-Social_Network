@@ -1,8 +1,8 @@
 import Post from '../models/Post.js'
 import User from '../models/User.js'
+import Comment from '../models/Comment.js'
 import path, { dirname } from 'path'
 import { fileURLToPath } from 'url'
-import {text} from "express";
 
 // Create Post
 export const createPost = async (req, res) => {
@@ -131,3 +131,24 @@ export const updatePost = async (req, res) => {
 		res.status(500).json({ message: 'Что-то пошло не так.' })
 	}
 }
+
+// Get Post Comments
+export const getPostComments = async (req, res) => {
+	try {
+		const post = await Post.findById(req.params.id)
+
+		if (!post) return res.status(404).json({ message: 'Пост не найден' })
+
+		const comments = await Comment.find({
+			_id: { $in: post.comments }
+		}).sort('-createdAt')
+
+		res.json(comments)
+	} catch (error) {
+		console.error(error)
+		res.status(500).json({ message: 'Не удалось получить комментарии' })
+	}
+}
+
+
+
